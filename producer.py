@@ -6,11 +6,14 @@ from confluent_kafka import Producer
 import uuid
 from datetime import datetime
 import os 
+import random
 
 
 KAFKA_BROKER = os.getenv('KAFKA_BROKER')
 KAFKA_TOPIC = os.getenv('KAFKA_TOPIC')
 
+# Streaming Data Configurations
+frequency = int(input('Frequency of message generation in seconds: '))
 
 producer = Producer({
     'bootstrap.servers': KAFKA_BROKER,
@@ -62,21 +65,21 @@ def send_msg_async(msg):
     except Exception as ex:
         print("Error : ", ex)
 
+
+
 def data_builder():
-    return {
-            "eventId": str(uuid.uuid4()),
-            "eventDate": str(datetime.now()),
-                "businessProcess": "PolicyEnrollment",
-                "eventClass": "CaseEvent",
-                "eventType": "CaseChange",
-                "eventStatus": "Success",
-                "market": "Broad",
-                "sourceSystem": "Intake",
-                "sourceState": {
-                "3rdParty": "LexisNexis",
-                "3rdPartyService": "Risk Classifier"
-                }
-    }
+        dateToday = datetime.now()
+        currTimeSuffix = dateToday.strftime("%Y-%m-%d %H:%M:%S")
+        CurrencyList = ['INR', 'USD', 'GBP', 'CAD', 'AED', 'JPY']
+        return {
+                "SaleID":'GKS' + str("%03d" % random.randrange(2, 200)),
+                "Product_ID" : 'P' + str("%03d" % random.randrange(1, 30)),
+                "QuantitySold" : random.randrange(1, 10),
+                "Vendor_ID" : 'GV' + str("%03d" % random.randrange(1, 20)),
+                "SaleDate" : currTimeSuffix,
+                "Sale_Amount" : '',
+                "Currency" : random.choice(CurrencyList)
+        }
 
 
-cron(10)
+cron(frequency)
